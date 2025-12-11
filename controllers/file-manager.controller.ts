@@ -158,7 +158,11 @@ export const createFolderPost = (req: Request, res: Response) => {
 
 export const listFolder = (req: Request, res: Response) => {
   try {
-    const mediaPath = path.join(__dirname, "..", "media");
+    let mediaPath = path.join(__dirname, "..", "media");
+
+    if (req.query.folderPath) {
+      mediaPath = path.join(mediaPath, `${req.query.folderPath}`);
+    }
     // Đọc danh sách file/thư mục trong media
     const items = fs.readdirSync(mediaPath);
 
