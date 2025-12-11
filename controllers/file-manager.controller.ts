@@ -119,3 +119,77 @@ export const deleteFilePatch = (req: Request, res: Response) => {
     });
   }
 };
+
+export const createFolderPost = (req: Request, res: Response) => {
+  try {
+    const { folderName } = req.body;
+    if (!folderName && typeof folderName !== "string") {
+      res.json({
+        code: "error",
+        message: "Tên thư mục không hợp lệ!",
+      });
+      return;
+    }
+
+    const mediaRoot = path.join(__dirname, "..", "media");
+    const folderPath = path.join(mediaRoot, folderName);
+    if (fs.existsSync(folderPath)) {
+      res.json({
+        code: "error",
+        message: "Folder đã tồn tại!",
+      });
+      return;
+    }
+
+    // Tạo folder
+    fs.mkdirSync(folderPath);
+
+    res.json({
+      code: "success",
+      message: "Thành công!",
+    });
+  } catch (error) {
+    res.json({
+      code: "error",
+      message: "Lỗi server khi tạo folder!",
+    });
+  }
+};
+
+export const listFolder = (req: Request, res: Response) => {
+  try {
+    const mediaPath = path.join(__dirname, "..", "media");
+    // Đọc danh sách file/thư mục trong media
+    const items = fs.readdirSync(mediaPath);
+
+    const folders: {
+      name: string;
+      createdAt: Date;
+    }[] = [];
+
+    items.forEach((item) => {
+      const itemPath = path.join(mediaPath, item);
+      const itemInfo = fs.statSync(itemPath);
+      if (itemInfo.isDirectory()) {
+        folders.push({
+          name: item,
+          createdAt: itemInfo.birthtime,
+        });
+      }
+    });
+
+    // Sắp xếp giảm dần theo ngày tạo
+    folders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+    res.json({
+      code: "success",
+      message: "Thành công!",
+      folderList: folders,
+    });
+  } catch (error) {
+    res.json({
+      code: "error",
+      message: "Lấy danh sách folder không thành công!",
+    });
+  }
+};
