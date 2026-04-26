@@ -18,7 +18,7 @@ export const upload = (req: Request, res: Response) => {
       const savePath = path.join(mediaDir, fileName);
       fs.writeFileSync(savePath, file.buffer);
       saveLinks.push({
-        forder: mediaDir,
+        forder: "/media",
         fileName: fileName,
         minitype: file.mimetype,
         size: file.size,
