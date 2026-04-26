@@ -7,6 +7,9 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1"
   },
+  "scripts": {
+    "start": "nodemon --exec \"node --inspect -r ts-node/register\" index.ts"
+  },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^25.6.0",
