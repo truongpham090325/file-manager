@@ -9,7 +9,7 @@ export const upload = (req: Request, res: Response) => {
     const saveLinks: {
       forder: string;
       fileName: string;
-      minitype: string;
+      mimetype: string;
       size: Number;
     }[] = [];
 
@@ -20,7 +20,7 @@ export const upload = (req: Request, res: Response) => {
       saveLinks.push({
         forder: "/media",
         fileName: fileName,
-        minitype: file.mimetype,
+        mimetype: file.mimetype,
         size: file.size,
       });
     });
