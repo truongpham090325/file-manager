@@ -7,7 +7,7 @@ export const upload = (req: Request, res: Response) => {
     const files = req.files as Express.Multer.File[];
     const mediaDir = path.join(__dirname, "../media");
     const saveLinks: {
-      forder: string;
+      folder: string;
       fileName: string;
       mimetype: string;
       size: Number;
@@ -18,7 +18,7 @@ export const upload = (req: Request, res: Response) => {
       const savePath = path.join(mediaDir, fileName);
       fs.writeFileSync(savePath, file.buffer);
       saveLinks.push({
-        forder: "/media",
+        folder: "/media",
         fileName: fileName,
         mimetype: file.mimetype,
         size: file.size,
@@ -36,6 +36,55 @@ export const upload = (req: Request, res: Response) => {
     res.json({
       code: "error",
       message: "Lỗi Upload!",
+    });
+  }
+};
+
+export const changeFileNamePatch = (req: Request, res: Response) => {
+  try {
+    const { folder, oldFileName, newFileName } = req.body;
+
+    if (!folder || !oldFileName || !newFileName) {
+      res.json({
+        code: "error",
+        message: "Thiếu thông tin cần thiết!",
+      });
+      return;
+    }
+
+    // Đường dẫn đến file
+    const cleanFolder = folder.replace("/", ""); // Loại bỏ dấu /
+    const mediaDir = path.join(__dirname, "..", cleanFolder);
+    const oldPath = path.join(mediaDir, oldFileName);
+    const newPath = path.join(mediaDir, newFileName);
+
+    if (!fs.existsSync(oldPath)) {
+      res.json({
+        code: "error",
+        message: "File không tồn tại!",
+      });
+      return;
+    }
+
+    if (fs.existsSync(newPath)) {
+      res.json({
+        code: "error",
+        message: "Tên file mới đã tồn tại!",
+      });
+      return;
+    }
+
+    // Đổi tên file
+    fs.renameSync(oldPath, newPath);
+    res.json({
+      code: "success",
+      message: "Thành công!",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      code: "error",
+      message: "Dữ liệu không hợp lệ!",
     });
   }
 };
