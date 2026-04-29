@@ -131,7 +131,7 @@ export const deleteFilePatch = (req: Request, res: Response) => {
 
 export const createFolderPost = (req: Request, res: Response) => {
   try {
-    const { folderName } = req.body;
+    const { folderName, folderPath } = req.body;
 
     if (!folderName && typeof folderName !== "string") {
       res.json({
@@ -143,9 +143,9 @@ export const createFolderPost = (req: Request, res: Response) => {
 
     // Đường dẫn đến folder
     const mediaroot = path.join(__dirname, "..", "media");
-    const folderPath = path.join(mediaroot, folderName);
+    const targetPath = path.join(mediaroot, folderPath || "", folderName);
 
-    if (fs.existsSync(folderPath)) {
+    if (fs.existsSync(targetPath)) {
       res.json({
         code: "error",
         message: "Folder đã tồn tại!",
@@ -154,7 +154,7 @@ export const createFolderPost = (req: Request, res: Response) => {
     }
 
     // Tạo folder
-    fs.mkdirSync(folderPath);
+    fs.mkdirSync(targetPath);
     res.json({
       code: "success",
       message: "Thành công!",
@@ -170,7 +170,11 @@ export const createFolderPost = (req: Request, res: Response) => {
 
 export const listFolder = (req: Request, res: Response) => {
   try {
-    const mediaPath = path.join(__dirname, "..", "media");
+    let mediaPath = path.join(__dirname, "..", "media");
+
+    if (req.query.folderPath != "undefined") {
+      mediaPath = path.join(mediaPath, `${req.query.folderPath}`); // Đường dẫn đến folder con (folderPath) tài liệu trong media
+    }
     // Đọc danh sách file/thư mục trong media
     const items = fs.readdirSync(mediaPath);
 
