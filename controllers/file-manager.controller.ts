@@ -5,7 +5,13 @@ import fs from "fs";
 export const upload = (req: Request, res: Response) => {
   try {
     const files = req.files as Express.Multer.File[];
-    const mediaDir = path.join(__dirname, "../media");
+    let mediaDir = path.join(__dirname, "../media");
+
+    // Thêm folderPath
+    if (req.body.folderPath) {
+      mediaDir = path.join(mediaDir, `${req.body.folderPath}`);
+    }
+
     const saveLinks: {
       folder: string;
       fileName: string;
@@ -18,7 +24,8 @@ export const upload = (req: Request, res: Response) => {
       const savePath = path.join(mediaDir, fileName);
       fs.writeFileSync(savePath, file.buffer);
       saveLinks.push({
-        folder: "/media",
+        folder:
+          "/media" + (req.body.folderPath ? `/${req.body.folderPath}` : ""),
         fileName: fileName,
         mimetype: file.mimetype,
         size: file.size,
