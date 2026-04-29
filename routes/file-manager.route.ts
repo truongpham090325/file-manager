@@ -28,4 +28,10 @@ router.post(
 
 router.get("/folder/list", fileManagerController.listFolder);
 
+router.patch(
+  "/folder/delete",
+  upload.none(),
+  fileManagerController.deleteFolderPatch,
+);
+
 export default router;

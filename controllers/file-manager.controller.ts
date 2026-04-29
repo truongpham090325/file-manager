@@ -217,3 +217,51 @@ export const listFolder = (req: Request, res: Response) => {
     });
   }
 };
+
+export const deleteFolderPatch = (req: Request, res: Response) => {
+  try {
+    const { folderPath } = req.body;
+
+    if (!folderPath) {
+      res.json({
+        code: "error",
+        message: "Tên thư mục không hợp lệ!",
+      });
+      return;
+    }
+
+    if (folderPath == "media" || folderPath == "/media") {
+      res.json({
+        code: "error",
+        message: "Không được phép xóa thư mục này!",
+      });
+      return;
+    }
+
+    // Đường dẫn đến folder
+    const folderDir = path.join(__dirname, "..", folderPath);
+
+    if (!fs.existsSync(folderDir)) {
+      res.json({
+        code: "error",
+        message: "Folder không tồn tại!",
+      });
+      return;
+    }
+
+    // Xóa folder
+    fs.rmSync(folderDir, {
+      recursive: true, // recursive: để xóa các folder và các file con bên trong
+    });
+    res.json({
+      code: "success",
+      message: "Thành công!",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      code: "error",
+      message: "Lỗi server khi xóa folder!",
+    });
+  }
+};
