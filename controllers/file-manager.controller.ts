@@ -19,6 +19,13 @@ export const upload = (req: Request, res: Response) => {
       size: Number;
     }[] = [];
 
+    // Kiểm tra và tạo thư mục nếu chưa tồn tại
+    if (!fs.existsSync(mediaDir)) {
+      fs.mkdirSync(mediaDir, {
+        recursive: true,
+      });
+    }
+
     files.forEach((file) => {
       const fileName = `${Date.now()}-${file.originalname}`;
       const savePath = path.join(mediaDir, fileName);
